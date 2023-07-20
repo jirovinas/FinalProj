@@ -123,16 +123,32 @@ def newLog():
 	fullnamel = LabelFrame(groot, text="Fullname", width=15, bg="white")
 	fullname = Entry(fullnamel,font=("Arial", 18))
 	fullname.pack()
-	fullname = my_canva.create_window(110, 60, anchor="nw", window=fullnamel)
+	fullname_w = my_canva.create_window(110, 60, anchor="nw", window=fullnamel)
 
 	passwordLabel = LabelFrame(groot, text="Password", width=15, bg="white")
-	password = Entry(passwordLabel,font=("Arial", 18))
-	password.pack()
+	passwor = Entry(passwordLabel,font=("Arial", 18))
+	passwor.pack()
 	password = my_canva.create_window(110, 120, anchor="nw", window=passwordLabel)
 
-	button1 = Button(groot, text="Login", width=20, bg="lightblue")
+	def getUsers(fullname, passwor):
+		id = 1
+		isExisted = False
+		for data in excel_new.iter_rows(values_only=True):
+			if data[0] == fullname and data[1] == passwor:
+				isExisted = True
+				break
+			id += 1
+		if not isExisted:
+			messagebox.showerror("Error", "Account not found\nPlease Register First")
+			groot.destroy()
+		else:
+			messagebox.showinfo("Login", "Login Successfuly")
+			groot.destroy()
+
+	button1 = Button(groot, text="Login", width=20, bg="lightblue", command=lambda:getUsers(fullname.get(), passwor.get()))
 	button1 = my_canva.create_window(170, 200, anchor="nw", window=button1)
 	groot.mainloop()	
+
 
 def oldLog():
 	vroot = Toplevel()
@@ -168,9 +184,11 @@ def oldLog():
 				break
 			id += 1
 		if not isExisted:
-			messagebox.showerror("Error", "Account not found")
+			messagebox.showerror("Error", "Account not found\nPlease Register First")
+			vroot.destroy()
 		else:
 			messagebox.showinfo("Login", "Login Successfuly")
+			vroot.destroy()
 
 	button1 = Button(vroot, text="Login", width=20, bg="lightblue", command=lambda:getUser(studentn.get(), passwo.get()))
 	button1 = my_canva.create_window(170, 200, anchor="nw", window=button1)
@@ -191,7 +209,7 @@ def log():
 #FRAMES
 topframe = Frame(root, height=50, width=1120, bg="#023047")
 topframe.pack(fill="x", side="top")
-leftframe = Frame(root, height=600, width=300, bg="#023047", bd=0)
+leftframe = Frame(root, height=600, width=350, bg="#023047", bd=0)
 leftframe.pack(fill="y",side='left')
 rigthframe = Frame(root, height=600, width=820)
 rigthframe.pack(fill="both", side='right')
@@ -212,8 +230,8 @@ rFrame = Frame(leftframe)
 
 str_var = StringVar()
 str_var.set("none")
-old_R = Radiobutton(rFrame, text="Old", variable=str_var, value="Old", font=("Arial", 12),bg="#023047",fg="#FFB703")
-new_R = Radiobutton(rFrame, text="New", variable=str_var, value="New", font=("Arial", 12),bg="#023047",fg="#FFB703")
+old_R = Radiobutton(rFrame, text="Old", variable=str_var, value="Old", font=("Arial", 15),bg="#023047",fg="#FFB703")
+new_R = Radiobutton(rFrame, text="New", variable=str_var, value="New", font=("Arial", 15),bg="#023047",fg="#FFB703")
 old_R.grid(row=0, column=0)
 new_R.grid(row=0, column=1)
 
@@ -251,29 +269,57 @@ my_canva.pack()
 my_canva.create_image(0,0,image=new_imag, anchor="nw")
 prof.pack()
 
-abt = Frame(rigthframe, width=600, height=750, bg="whitesmoke")
-abt_l = Label(abt,text=f"Dalubhasaan ng Lungsod ng Lucena"
-"\nOne of the high impact programs of Mayor Roderick A. Alcala is free quality tertiary education."
-"\nWhen he assumed office in 2012, Dalubhasaan ng Lungsod ng Lucena (DLL),"
-"\n was his vision of providing access to college education for free."
-"\nMayor Alcala envisions DLL as an institution that would provide easy access to higher education and," 
-"\nultimately develop the competencies of the youth of the city to meet the demands of the local industries and businesses."
-"\nThrough DLL, students from low-income families are able to enrol in degree programs at no cost."
-"\nThe annual appropriation of the local government has allowed DLL to cover all its operation expenses,"
-"\nincluding tuition and miscellaneous fees of students."
-"\nThe college, operated, managed, and fully-subsidized by the City Government, implements a zero-collection policy."
-"\nAt present, DLL has a total of nine degree programs and continue to apply for additional academic programs to accommodate more scholars:"
-"\nBachelor of Arts in Information Technology"
-"\nBachelor of Arts in Public Administration"
-"\nBachelor of Science in Accountancy"
-"\nBachelor of Science in Accounting Information System"
-"\nBachelor of Science in English Language Studies"
-"\nBachelor of Science in Entrepreneurship"
-"\nBachelor of Science in Social Work"
-"\nBachelor in Technical Vocational Teacher’s Education"
-"\nDiploma in Hotel and Restaurant Services"
-"\nAt present the former annex building of Lucena City Hall is being renovated to accommodate the growing student population of DLL.", font=("Arial", 11))
-abt_l.pack()
+#About
+a = "Dalubhasaan ng Lungsod ng Lucena"
+b = "One of the high impact programs of Mayor Roderick A. Alcala is free quality tertiary education."
+c = "When he assumed office in 2012, Dalubhasaan ng Lungsod ng Lucena (DLL) was his vision of providing access to college education for free. \nMayor Alcala envisions DLL as an institution that would provide easy access to higher education and \nultimately develop the competencies of the youth of the city to meet the demands of the local industries and businesses."
+d = "Through DLL, students from low-income families are able to enrol in degree programs at no cost. \nThe annual appropriation of the local government has allowed DLL to cover all its operation expenses \nincluding tuition and miscellaneous fees of students. \nThe college, operated, managed, and fully-subsidized by the City Government, implements a zero-collection policy."
+e = "At present, DLL has a total of nine degree programs and continue to apply for additional academic programs to accommodate more scholars:"
+f = "Bachelor of Arts in Information Technology"
+g = "Bachelor of Arts in Public Administration"
+h = "Bachelor of Science in Accountancy"
+i = "Bachelor of Science in Accounting Information System"
+j = "Bachelor of Science in English Language Studies"
+k = "Bachelor of Science in Entrepreneurship"
+l = "Bachelor of Science in Social Work"
+m = "Bachelor in Technical Vocational Teacher’s Education"
+n = "Diploma in Hotel and Restaurant Services"
+o = "At present the former annex building of Lucena City Hall is being renovated to accommodate the growing student population of DLL."
+
+abt = Frame(rigthframe, width=600, height=750)
+a_l = Label(abt,text=a,font=("System" ,25),fg="black",)
+b_l = Label(abt,text=b,font=("System" ,11),fg="black",)
+c_l = Label(abt,text=c,font=("System" ,11),fg="black",)
+d_l = Label(abt,text=d,font=("System" ,11),fg="black",)
+e_l = Label(abt,text=e,font=("System" ,11),fg="black",)
+f_l = Label(abt,text=f,font=("System" ,11),fg="black",)
+g_l = Label(abt,text=g,font=("System" ,11),fg="black",)
+h_l = Label(abt,text=h,font=("System" ,11),fg="black",)
+i_l = Label(abt,text=i,font=("System" ,11),fg="black",)
+j_l = Label(abt,text=j,font=("System" ,11),fg="black",)
+k_l = Label(abt,text=k,font=("System" ,11),fg="black",)
+l_l = Label(abt,text=l,font=("System" ,11),fg="black",)
+m_l = Label(abt,text=m,font=("System" ,11),fg="black",)
+n_l = Label(abt,text=n,font=("System" ,11),fg="black",)
+o_l = Label(abt,text=o,font=("System" ,11),fg="black",)
+
+a_l.pack()
+b_l.pack()
+c_l.pack()
+d_l.pack()
+e_l.pack()
+f_l.pack()
+g_l.pack()
+h_l.pack()
+i_l.pack()
+j_l.pack()
+k_l.pack()
+l_l.pack()
+m_l.pack()
+n_l.pack()
+o_l.pack()
+
+
 abt.pack()
 showProf()
 
