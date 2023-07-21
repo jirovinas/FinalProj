@@ -10,6 +10,7 @@ from PIL import Image, ImageTk
 root = tk.Tk()
 root.geometry("1120x600")
 root.title("Login Interface")
+root.resizable(False, False)
 
 excel_con = Workbook()
 excel_con = load_workbook("Sample_file.xlsx")
@@ -19,40 +20,42 @@ excel_new = excel_con["New Students"]
 
 def oldReg():
 	newroot = Toplevel()
-	newroot.geometry("475x265")
+	newroot.geometry("600x500")
 	newroot.title("Register Interface For Old Students") 
-	#newroot.resizable(False, False)
+	newroot.resizable(False, False)
 
-	path = "pic.jpg"
-	bg = ImageTk.PhotoImage(file = path)
-	my_canva = Canvas(newroot, height=265, width=475)
+	path = "l.webp"
+	bg = Image.open(path)
+	resize_bg = bg.resize((600, 500))
+	bg = ImageTk.PhotoImage(resize_bg)
+	my_canva = Canvas(newroot, height=500, width=600)
 	my_canva.pack(fill="both")
 	my_canva.create_image(0,0,image=bg, anchor="nw")
 
-	my_canva.create_text(250, 20, text="Register", font=("Arial", 20),fill="black")
+	my_canva.create_text(270, 70, text="Register For Old Students", font=("Arial", 20),fill="black")
 
 	studentnol = LabelFrame(newroot, text="Student No.", width=15, bg="white")
 	studentno = Entry(studentnol,font=("Arial", 18))
 	studentno.pack()
-	studentno_w = my_canva.create_window(110, 50, anchor="nw", window=studentnol)
+	studentno_w = my_canva.create_window(130, 100, anchor="nw", window=studentnol)
 
 	year_sectionl = LabelFrame(newroot, text="Year And Section", width=15, bg="white")
 	year_section = Entry(year_sectionl,font=("Arial", 18))
 	year_section.pack()
-	year_section_w = my_canva.create_window(110, 110, anchor="nw", window=year_sectionl)
+	year_section_w = my_canva.create_window(130, 170, anchor="nw", window=year_sectionl)
 
 	passwordl = LabelFrame(newroot, text="Password", width=15, bg="white")
 	password = Entry(passwordl,font=("Arial", 18))
 	password.pack()
-	password_w = my_canva.create_window(110, 170, anchor="nw", window=passwordl)
+	password_w = my_canva.create_window(130, 240, anchor="nw", window=passwordl)
 
 	def oldlyreg():
 		excel_old.append((studentno.get(), password.get(), year_section.get()))
 		messagebox.showinfo("Register Message", "Register Successful")
 		excel_con.save("Sample_file.xlsx")
 
-	r_button = Button(newroot, text="Register", width=20, bg="lightblue", command=lambda:oldlyreg())
-	button = my_canva.create_window(170, 230, anchor="nw", window=r_button)
+	r_button = Button(newroot, text="Register", width=20, bg="lightblue", font=("Arial", 12) , command=lambda:oldlyreg())
+	button = my_canva.create_window(170, 310, anchor="nw", window=r_button)
 
 	newroot.mainloop()
 	
@@ -60,40 +63,42 @@ def oldReg():
 def newReg():
 	
 	nroot = Toplevel()
-	nroot.geometry("475x265")
+	nroot.geometry("600x500")
 	nroot.title("Register Interface For New Students") 
-	#nroot.resizable(False, False)
+	nroot.resizable(False, False)
 
-	path = "pic.jpg"
-	bg = ImageTk.PhotoImage(file = path)
-	my_canva = Canvas(nroot, height=265, width=475)
+	path = "r.jpg"
+	bg = Image.open(path)
+	resize_bg = bg.resize((600, 500))
+	bg = ImageTk.PhotoImage(resize_bg)
+	my_canva = Canvas(nroot, height=500, width=600)
 	my_canva.pack(fill="both")
 	my_canva.create_image(0,0,image=bg, anchor="nw")
 
-	my_canva.create_text(250, 20, text="Register", font=("Arial", 20),fill="black")
+	my_canva.create_text(260, 60, text="Register For New Students", font=("Arial", 20),fill="black")
 
 	fullnl = LabelFrame(nroot, text="Fullname", width=15, bg="white")
 	fulln = Entry(fullnl,font=("Arial", 18))
 	fulln.pack()
-	fulln_w = my_canva.create_window(110, 60, anchor="nw", window=fullnl)
+	fulln_w = my_canva.create_window(130, 90, anchor="nw", window=fullnl)
 
 	year_secl = LabelFrame(nroot, text="Year And Section", width=15, bg="white")
 	year_sec = Entry(year_secl,font=("Arial", 18))
 	year_sec.pack()
-	year_sec_w = my_canva.create_window(110, 110, anchor="nw", window=year_secl)
+	year_sec_w = my_canva.create_window(130, 160, anchor="nw", window=year_secl)
 
 	passwl = LabelFrame(nroot, text="Password", width=15, bg="white")
 	passw = Entry(passwl,font=("Arial", 18))
 	passw.pack()
-	passw_w = my_canva.create_window(110, 170, anchor="nw", window=passwl)
+	passw_w = my_canva.create_window(130, 230, anchor="nw", window=passwl)
 
 	def newlyreg():
 		excel_new.append((fulln.get(), passw.get(), year_sec.get()))
 		messagebox.showinfo("Register Message", "Register Successful")
 		excel_con.save("Sample_file.xlsx")
 
-	r_button1 = Button(nroot, text="Register", width=20, bg="lightblue",command=lambda:newlyreg())
-	r_button = my_canva.create_window(170, 220, anchor="nw", window=r_button1)
+	r_button1 = Button(nroot, text="Register", width=20, bg="lightblue", font=("Arial",12),command=lambda:newlyreg())
+	r_button = my_canva.create_window(170, 300, anchor="nw", window=r_button1)
 
 	nroot.mainloop()
 
@@ -107,28 +112,29 @@ def reg():
 		
 def newLog():
 	groot = Toplevel()
-	groot.geometry("475x265")
+	groot.geometry("700x350")
 	groot.title("Login Interface For New Students") 
 	#groot.resizable(False, False)
 
-	path = "H.jpg"
-	bg = ImageTk.PhotoImage(file = path)
-	my_canva = Canvas(groot, height=265, width=475)
+	path = "login.jpg"
+	bg = Image.open(path)
+	resize_bg = bg.resize((700, 350))
+	bg = ImageTk.PhotoImage(resize_bg)
+	my_canva = Canvas(groot, height=350, width=700)
 	my_canva.pack(fill="both")
-
 	my_canva.create_image(0,0,image=bg, anchor="nw")
 
-	my_canva.create_text(250, 20, text="Sign In", font=("Arial", 20),fill="black")
+	my_canva.create_text(450, 50, text="Sign In For New Students", font=("Arial", 20),fill="black")
 
 	fullnamel = LabelFrame(groot, text="Fullname", width=15, bg="white")
 	fullname = Entry(fullnamel,font=("Arial", 18))
 	fullname.pack()
-	fullname_w = my_canva.create_window(110, 60, anchor="nw", window=fullnamel)
+	fullname_w = my_canva.create_window(310, 90, anchor="nw", window=fullnamel)
 
 	passwordLabel = LabelFrame(groot, text="Password", width=15, bg="white")
-	passwor = Entry(passwordLabel,font=("Arial", 18))
+	passwor = Entry(passwordLabel,font=("Arial", 18), show="*")
 	passwor.pack()
-	password = my_canva.create_window(110, 120, anchor="nw", window=passwordLabel)
+	password = my_canva.create_window(310, 170, anchor="nw", window=passwordLabel)
 
 	def getUsers(fullname, passwor):
 		id = 1
@@ -145,35 +151,36 @@ def newLog():
 			messagebox.showinfo("Login", "Login Successfuly")
 			groot.destroy()
 
-	button1 = Button(groot, text="Login", width=20, bg="lightblue", command=lambda:getUsers(fullname.get(), passwor.get()))
-	button1 = my_canva.create_window(170, 200, anchor="nw", window=button1)
+	button1 = Button(groot, text="Login", width=20, bg="lightblue", font=("Arial", 12), command=lambda:getUsers(fullname.get(), passwor.get()))
+	button1 = my_canva.create_window(350, 250, anchor="nw", window=button1)
 	groot.mainloop()	
 
 
 def oldLog():
 	vroot = Toplevel()
-	vroot.geometry("475x265")
+	vroot.geometry("700x350")
 	vroot.title("Login Interface For Old Students") 
 	#vroot.resizable(False, False)
 
-	path = "H.jpg"
-	bg = ImageTk.PhotoImage(file = path)
-	my_canva = Canvas(vroot, height=265, width=475)
+	path = "login.jpg"
+	bg = Image.open(path)
+	resize_bg = bg.resize((700, 350))
+	bg = ImageTk.PhotoImage(resize_bg)
+	my_canva = Canvas(vroot, height=350, width=700)
 	my_canva.pack(fill="both")
-
 	my_canva.create_image(0,0,image=bg, anchor="nw")
 
-	my_canva.create_text(250, 20, text="Sign In", font=("Arial", 20),fill="black")
+	my_canva.create_text(450, 50, text="Sign In For Old Students", font=("Arial", 20),fill="black")
 
 	studentnl = LabelFrame(vroot, text="Student No", width=15, bg="white")
 	studentn = Entry(studentnl,font=("Arial", 18))
 	studentn.pack()
-	studentn_w = my_canva.create_window(110, 60, anchor="nw", window=studentnl)
+	studentn_w = my_canva.create_window(310, 90, anchor="nw", window=studentnl)
 
 	passwol = LabelFrame(vroot, text="Password", width=15, bg="white")
-	passwo = Entry(passwol,font=("Arial", 18))
+	passwo = Entry(passwol,font=("Arial", 18), show="*")
 	passwo.pack()
-	passwo_w = my_canva.create_window(110, 120, anchor="nw", window=passwol)
+	passwo_w = my_canva.create_window(310, 170, anchor="nw", window=passwol)
 
 	def getUser(studentn, passwo):
 		id = 1
@@ -190,8 +197,8 @@ def oldLog():
 			messagebox.showinfo("Login", "Login Successfuly")
 			vroot.destroy()
 
-	button1 = Button(vroot, text="Login", width=20, bg="lightblue", command=lambda:getUser(studentn.get(), passwo.get()))
-	button1 = my_canva.create_window(170, 200, anchor="nw", window=button1)
+	button1 = Button(vroot, text="Login", width=20, bg="lightblue", font=("Arial",12), command=lambda:getUser(studentn.get(), passwo.get()))
+	button1 = my_canva.create_window(350, 250, anchor="nw", window=button1)
 
 	vroot.mainloop()	
 def log():

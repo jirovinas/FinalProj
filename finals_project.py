@@ -287,7 +287,6 @@ def newInterface():
         tv1.pack()
         view_frame.mainloop()
         refresh_data(tv1)
-
     
 
     def edit_data():
@@ -481,6 +480,7 @@ def newInterface():
     photo0 = ImageTk.PhotoImage(file = path)
     pic = Label(leftframe, image= photo0,height=600, width=700)
     pic.place(x=0, y=0)
+    
     student_no = Label(leftframe, text="Student No.", width=12, pady=20, font=("", 18), bg="#CCAAFF")
     studentno_Entry = Entry(leftframe, width=25, font=("", 23))
     student_no.grid(row=0, column=0)

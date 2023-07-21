@@ -1,6 +1,4 @@
-from cgitb import text
 from http.client import FOUND
-from re import search
 from tkinter import *
 import tkinter as tk
 from tkinter import ttk
@@ -12,145 +10,461 @@ from PIL import Image, ImageTk
 
 #New Interface
 NewRoot = tk.Tk()
-NewRoot.geometry("1030x820")
+NewRoot.geometry("1030x780")
 NewRoot.title("New Interface")
 NewRoot.configure(bg="black")
 
 #Excel File
 excel_con = Workbook()
 excel_con = load_workbook("Sample_file.xlsx")
-excel_activate = excel_con.active
+excel_data = excel_con['Data']
+
+#ADD RECORD BBUTTON FUNCTION
+def add_record():
+        student_no = studentno_Entry.get()
+        full_name = fullname_Entry.get()
+        email = email_Entry.get()
+        gender = gender_var.get()
+        course = course_var.get()
+        contact_no = no_Entry.get()
+        address = address_Entry.get()
+        
+        Found = False
+        for each_cell in range(2, excel_data.max_row + 1):
+            if student_no == excel_data["A"+ str(each_cell)].value or full_name == excel_data["B"+ str(each_cell)].value:
+                Found = True
+                break
+        if Found == True:
+            messagebox.showerror("Data", "Data Already Exist")
+        else:
+            lastrow = str(excel_data.max_row + 1)
+            excel_data["A"+lastrow] = student_no
+            excel_data["B"+lastrow] = full_name
+            excel_data["C"+lastrow] = email
+            excel_data["D"+lastrow] = gender
+            excel_data["E"+lastrow] = course
+            excel_data["F"+lastrow] = contact_no
+            excel_data["G"+lastrow] = address
+
+            excel_con.save("Sample_file.xlsx")
+            messagebox.showinfo("Save Records", "Records saved successfully!")
+            refresh_data(tv1)
+
+        record = f"Student Ref: {student_no}\n"
+        record += f"Full Name: {full_name}\n"
+        record += f"Email: {email}\n"
+        record += f"Gender: {gender}\n"
+        record += f"Course: {course}\n"
+        record += f"Contact No.: {contact_no}\n"
+        record += f"Address: {address}\n"
+        
+        student_detailsT.insert(END, record)
+
+        studentno_Entry.delete(0, END)
+        fullname_Entry.delete(0, END)
+        email_Entry.delete(0, END)
+        gender_var.set("none")
+        course_var.set("")
+        no_Entry.delete(0, END)
+        address_Entry.delete(0, END)
+#REFRESH FUNCTION
+def refresh_data(tree):
+        tree.delete(*tree.get_children())
+        data = get_updated_data()
+        for each_cell in range(2, (excel_data.max_row)+1):
+            tv1.insert(parent='', index="end", text=str(each_cell),values=(excel_data['A'+str(each_cell)].value,excel_data['B'+str(each_cell)].value, excel_data['C'+str(each_cell)].value, excel_data['D'+str(each_cell)].value, excel_data['E'+str(each_cell)].value, excel_data['F'+str(each_cell)].value, excel_data['G'+str(each_cell)].value, excel_data['H'+str(each_cell)].value))
+
+#UPDATE FUNCTION
+def get_updated_data():
+        updated_value = list()
+        for each_cell in range(2, (excel_data.max_row)+1):     
+            updated_value.append([excel_data['A'+str(each_cell)].value,excel_data['B'+str(each_cell)].value, excel_data['C'+str(each_cell)].value, excel_data['D'+str(each_cell)].value,excel_data['E'+str(each_cell)].value,excel_data['F'+str(each_cell)].value,excel_data['G'+str(each_cell)].value,excel_data['H'+str(each_cell)].value])
+        return updated_value
+
+#EXIT BUTTON FUNCTION
+def exit_interface():
+    NewRoot.destroy()
+
+#PRINT BUTTON FUNCTION
+def print_records():
+    student_details_text = student_detailsT.get("1.0", END)
+    messagebox.showinfo("Print Records", student_details_text)
+    student_details_text = student_detailsT.delete("1.0", END)
+
+#RESET BUTTON FUNCTION
+def reset_fields():
+        studentno_Entry.delete(0, END)
+        fullname_Entry.delete(0, END)
+        email_Entry.delete(0, END)
+        gender_var.set("none")
+        course_var.set("")
+        no_Entry.delete(0, END)
+        address_Entry.delete(0, END)
+        search_box.delete(0, END)
+        student_detailsT.delete("1.0", END)
+
+def search_data():
+    data = []
+
+    for i in excel_data.iter_rows(values_only=True):
+        data.append(i)
+
+        tv1.delete(*tv1.get_children())
+        lists = []
+        for i in data:
+            x = False
+            for j in i:
+                if j != None:
+                    if search_box.get().lower() in j.lower():
+                        x = True
+                        break
+            if x:
+                lists.append(i)
+        
+        for i in lists:
+            tv1.insert('', index=END, values=i)
+
+def delete_data():
+    student_no = search_box.get()
+    pos = 1
+    Found = False
+    for each_cell in excel_data.iter_rows(values_only=True):
+        if student_no == each_cell[0]:
+            Found = True
+            break
+        pos += 1
+    if(Found == True):
+        excel_data.delete_rows(pos)
+        messagebox.showinfo("INFO","DATA DELETED")
+        clear_entries()
+    excel_con.save('Sample_file.xlsx')
+    refresh_data(tv1)
+
+def clear_entries():
+    studentno_Entry.delete(0, END)
+    fullname_Entry.delete(0, END)
+    email_Entry.delete(0, END)
+    gender_var.set("none")
+    course_var.set("")
+    no_Entry.delete(0, END)
+    search_box.delete(0, END)
+    address_Entry.delete(0, END)
+
+def edit_data():
+    search_bo = search_box.get()
+    for each_cell in range(2, (excel_data.max_row)+1):
+        if search_bo ==  excel_data['A'+str(each_cell)].value:
+            Found = True
+            break
+        else:
+            Found=False
+    if(Found == True):
+        Edit_form = Toplevel()
+        Edit_form.geometry('300x800')
+        Edit_form.title('Edit Data from Excel')
+
+        EditLabel = Label(Edit_form, text="Edit Form ", font=("Helvetica", 16))
+        EditLabel.pack()
+
+        student_noLbl=Label(Edit_form,text="Student No.",font=("bold",12),pady=(18))
+        student_noLbl.pack()
+        
+        student_noExcel = StringVar()
+        full_nameExcel = StringVar()
+        emailExcel = StringVar()
+        genderExcel = StringVar()
+        courseExcel = StringVar()
+        noExcel = StringVar()
+        addressExcel = StringVar()
+
+        student_noTxt=Entry(Edit_form, width=25, font=('Helvetica',12),textvariable=student_noExcel)
+        student_noTxt.pack()
+
+        student_noChoice = IntVar()
+        student_noChk = Checkbutton(Edit_form, text="same as before", variable=student_noChoice, command=lambda:get_existing_student_no())
+        student_noChk.pack()
+        
+        full_name=Label(Edit_form,text="Full Name",font=("bold",12),pady=(15))
+        full_name.pack()
+
+        full_nameTxt=Entry(Edit_form, width=25, font=('Helvetica',12),textvariable=full_nameExcel)
+        full_nameTxt.pack()
+
+        full_nameChoice = IntVar()
+        full_nameChk = Checkbutton(Edit_form, text="same as before", variable=full_nameChoice, command=lambda:get_existing_full_name())
+        full_nameChk.pack()
+
+        email=Label(Edit_form,text="Email",font=("bold",12),pady=(15))
+        email.pack()
+
+        emailTxt=Entry(Edit_form, width=25, font=('Helvetica',12),textvariable=emailExcel)
+        emailTxt.pack()
+
+        emailChoice = IntVar()
+        emailChk = Checkbutton(Edit_form, text="same as before", variable=emailChoice, command=lambda:get_existing_email())
+        emailChk.pack()
+
+        gender=Label(Edit_form,text="Gender",font=("bold",12),pady=(15))
+        gender.pack()
+
+        genderTxt=Entry(Edit_form, width=25, font=('Helvetica',12),textvariable=genderExcel)
+        genderTxt.pack()
+
+        genderChoice = IntVar()
+        genderChk = Checkbutton(Edit_form, text="same as before", variable=genderChoice, command=lambda:get_existing_gender())
+        genderChk.pack()
+
+        course=Label(Edit_form,text="Course",font=("bold",12),pady=(15))
+        course.pack()
+
+        courseTxt=Entry(Edit_form, width=25, font=('Helvetica',12),textvariable=courseExcel)
+        courseTxt.pack()
+
+        courseChoice = IntVar()
+        courseChk = Checkbutton(Edit_form, text="same as before", variable=courseChoice, command=lambda:get_existing_course())
+        courseChk.pack()
+
+        no=Label(Edit_form,text="Contact No.",font=("bold",12),pady=(15))
+        no.pack()
+
+        noTxt=Entry(Edit_form, width=25, font=('Helvetica',12),textvariable=noExcel)
+        noTxt.pack()
+
+        noChoice = IntVar()
+        noChk = Checkbutton(Edit_form, text="same as before", variable=noChoice, command=lambda:get_existing_no())
+        noChk.pack()
+
+        address=Label(Edit_form,text="Address",font=("bold",12),pady=(15))
+        address.pack()
+
+        addressTxt=Entry(Edit_form, width=25, font=('Helvetica',12),textvariable=addressExcel)
+        addressTxt.pack()
+
+        addressChoice = IntVar()
+        addressChk = Checkbutton(Edit_form, text="same as before", variable=addressChoice, command=lambda:get_existing_address())
+        addressChk.pack()
+
+        def get_existing_student_no():
+            if student_noChoice.get()==1:
+                student_noOld = excel_data['A'+str(each_cell)].value
+                student_noExcel.set(student_noOld)
+            elif student_noChoice.get() ==0:
+                student_noExcel.set("")
+        def get_existing_full_name():
+            if full_nameChoice.get()==1:
+                full_nameOld = excel_data['B'+str(each_cell)].value
+                full_nameExcel.set(full_nameOld)
+            elif full_nameChoice.get() ==0:
+                full_nameExcel.set("")
+        def get_existing_email():
+            if emailChoice.get()==1:
+                emailOld = excel_data['C'+str(each_cell)].value
+                emailExcel.set(emailOld)
+            elif emailChoice.get() ==0:
+                emailExcel.set("")
+        def get_existing_gender():
+            if genderChoice.get()==1:
+                genderOld = excel_data['D'+str(each_cell)].value
+                genderExcel.set(genderOld)
+            elif genderChoice.get() ==0:
+                genderExcel.set("")
+        def get_existing_course():
+            if courseChoice.get()==1:
+                courseOld = excel_data['E'+str(each_cell)].value
+                courseExcel.set(courseOld)
+            elif courseChoice.get() ==0:
+                courseExcel.set("")
+        def get_existing_no():
+            if noChoice.get()==1:
+                noOld = excel_data['F'+str(each_cell)].value
+                noExcel.set(noOld)
+            elif noChoice.get() ==0:
+                noExcel.set("")
+        def get_existing_address():
+            if addressChoice.get()==1:
+                addressOld = excel_data['H'+str(each_cell)].value
+                addressExcel.set(addressOld)
+            elif addressChoice.get() ==0:
+                addressExcel.set("")
+        
+        def update():
+            excel_data['A'+str(each_cell)].value = student_noTxt.get()
+            excel_data['B'+str(each_cell)].value = full_nameTxt.get()
+            excel_data['C'+str(each_cell)].value = emailTxt.get()
+            excel_data['D'+str(each_cell)].value = genderTxt.get()
+            excel_data['E'+str(each_cell)].value = courseTxt.get()
+            excel_data['F'+str(each_cell)].value = noTxt.get()
+            excel_data['G'+str(each_cell)].value = addressTxt.get()
+
+            excel_con.save('Sample_file.xlsx')
+            messagebox.showinfo("UPDATED","DATA HAS BEEN UPDATED")
+            Edit_form.destroy()
+            search_box.delete(0, END)
+            refresh_data(tv1)
+        EditBtn = Button(Edit_form, width=15, font=("Arial", 12), text="Update Value",command=lambda:update(), bg="#b1f2ff")
+        EditBtn.pack(padx=10, pady=9)
+
+        Edit_form.mainloop()
 
 #Frames
 topframe = Frame(NewRoot, height=70, width=1030, bg="#CCAAFF")
 topframe.grid(row=0, column=0, columnspan=6, rowspan=2, sticky=W)
-leftframe = Frame(NewRoot, height=600, width=1030, bd=3)
-leftframe.grid(row=2, column=0, columnspan=3, rowspan=6, sticky=W)
-bottomframe = Frame(NewRoot, height=100, width=1205, bg="#CCAAFF")
+centerframe = Frame(NewRoot, height=590, width=1030, bd=3)
+centerframe.grid(row=2, column=0, columnspan=3, rowspan=6, sticky=W)
+bottomframe = Frame(NewRoot, height=100, width=1030, bg="#CCAAFF")
 bottomframe.grid(row=8, column=0, columnspan=6, rowspan=2, sticky=W)
 
 # topframe
-pat = "gg.jpg"
-photo = ImageTk.PhotoImage(file = pat)
+pat = "gr.jpg"
+b = Image.open(pat)
+resize_b = b.resize((1030, 100))
+b = ImageTk.PhotoImage(resize_b)
 my_canv = Canvas(topframe, height=70, width=1030)
-my_canv.grid()
-my_canv.create_image(0,0,image=photo, anchor="nw")
-my_canv.create_text(515, 40, text="STUDENT RECORDS SYSTEM", font=("Arial", 40),fill="white")
+my_canv.grid(row=0, column=0)
+my_canv.create_image(0,0,image=b, anchor="nw")
+my_canv.create_text(515, 40, text="STUDENT RECORDS SYSTEM", font=("System", 41),fill="black")
 
-# leftframe
-path = "gg.jpg"
-photo0 = ImageTk.PhotoImage(file = path)
-my_canva = Canvas(leftframe, height=600, width=1030)
-my_canva.grid(row=0, column=0)
-my_canva.create_image(0,0,image=photo0, anchor="nw")
+#center
+path = "gr.jpg"
+bg = Image.open(path)
+resize_bg = bg.resize((1030, 590))
+bg = ImageTk.PhotoImage(resize_bg)
+my_canva = Canvas(centerframe, height=590, width=1030)
+my_canva.grid()
+my_canva.create_image(0,0,image=bg, anchor="nw")
 
-student_no = LabelFrame(leftframe, text="Student No.")
-studentno_Entry = Entry(student_no, width=50)
+student_no = LabelFrame(centerframe, text="Student No.", font=("Arial", 10))
+studentno_Entry = Entry(student_no, width=30, font=("Arial", 15))
 student_no.grid(row=0, column=0)
 studentno_Entry.grid(row=0, column=1, padx=10, pady=10,)
-student_no_canva = my_canva.create_window(50, 20, anchor="nw", window=student_no)
+student_no_canva = my_canva.create_window(50, 30, anchor="nw", window=student_no)
 
-full_name = LabelFrame(leftframe, text="Full Name")
-fullname_Entry = Entry(full_name, width=50)
+full_name = LabelFrame(centerframe, text="Full Name", font=("Arial", 10))
+fullname_Entry = Entry(full_name, width=30, font=("Arial", 15))
 full_name.grid(row=1, column=0)
 fullname_Entry.grid(row=1, column=1, padx=10, pady=10)
-full_name_canva = my_canva.create_window(50, 90, anchor="nw", window=full_name)
+full_name_canva = my_canva.create_window(50, 110, anchor="nw", window=full_name)
 
-email = LabelFrame(leftframe, text="Email")
-email_Entry = Entry(email, width=50)
+email = LabelFrame(centerframe, text="Email", font=("Arial", 10))
+email_Entry = Entry(email, width=30, font=("Arial", 15))
 email.grid(row=2, column=0)
 email_Entry.grid(row=2, column=1, padx=10, pady=10)
-email_canva = my_canva.create_window(50, 160, anchor="nw", window=email)
+email_canva = my_canva.create_window(50, 190, anchor="nw", window=email)
 
-gender = LabelFrame(leftframe, text="Gender")
+gender = LabelFrame(centerframe, text="Gender", font=("Arial", 10))
 gender_var = StringVar()
-male_R = Radiobutton(gender, text="Male", variable=gender_var, value="Male", width=20)
-female_R = Radiobutton(gender, text="Female", variable=gender_var, value="Female", width=18)
+gender_var.set("none")
+male_R = Radiobutton(gender, text="Male", variable=gender_var, value="Male", width=17, font=("Arial", 12))
+female_R = Radiobutton(gender, text="Female", variable=gender_var, value="Female", width=16, font=("Arial", 12))
 male_R.grid(row=3, column=0)
 female_R.grid(row=3, column=1)
-gender_canva = my_canva.create_window(50, 230, anchor="nw", window=gender)
+gender_canva = my_canva.create_window(50, 270, anchor="nw", window=gender)
 
-course = LabelFrame(leftframe, text="Course")
+course = LabelFrame(centerframe, text="Course", font=("Arial", 10))
 course_var = StringVar()
 course_list = ["BSIT", "BSA", "BSAIS", "ABELS", "BSSW", "BSE", "DHRS", "BSPA", "BTVTE"]
-course_combo = ttk.Combobox(course, values=course_list, textvariable=course_var,font=("Times New Roman", 20))
-course_combo.grid(row=4, column=0)
-course_canva = my_canva.create_window(50, 300, anchor="nw", window=course)
+course_combo = ttk.Combobox(course, values=course_list, textvariable=course_var, font=("Arial", 15),width=30)
+course_combo.grid(row=4, column=0, padx=1, pady=10)
+course_canva = my_canva.create_window(50, 330, anchor="nw", window=course)
 
-no = LabelFrame(leftframe, text="Contact No.")
-no_Entry = Entry(no, width=50)
+no = LabelFrame(centerframe, text="Contact No.", font=("Arial", 10))
+no_Entry = Entry(no, width=30, font=("Arial", 15))
 no.grid(row=5, column=0)
 no_Entry.grid(row=5, column=1, padx=10, pady=10)
-no_canva = my_canva.create_window(50, 370, anchor="nw", window=no)
+no_canva = my_canva.create_window(50, 410, anchor="nw", window=no)
 
-address = LabelFrame(leftframe, text="Address")
-address_Entry = Entry(address, width=50)
+address = LabelFrame(centerframe, text="Address", font=("Arial", 10))
+address_Entry = Entry(address, width=30, font=("Arial", 15))
 address.grid(row=6, column=0)
 address_Entry.grid(row=7, column=1, padx=10, pady=10)
-address_canva = my_canva.create_window(50, 440, anchor="nw", window=address)
+address_canva = my_canva.create_window(50, 490, anchor="nw", window=address)
 
-# rightframe
-student_details = LabelFrame(leftframe, text="Student Details")
-student_detailsT = Text(student_details, width=44, font=("", 18), height=18)
+student_details = LabelFrame(centerframe, text="Student Details", font=("Arial", 15))
+student_detailsT = Text(student_details, width=51, font=("Arial", 15), height=8)
 student_details.grid(row=1, column=1, columnspan=2)
 student_detailsT.grid(row=2, column=1)
-student_details_canva = my_canva.create_window(420, 40, anchor="nw", window=student_details)
+student_details_canva = my_canva.create_window(420, 30, anchor="nw", window=student_details)
+
+firstclick = True
+def on_search_box_click(event):     
+    global firstclick
+
+    if firstclick: 
+        firstclick = False
+        search_box.delete(0, "end")
+
+search_boxf = LabelFrame(centerframe, text="Search, Delete, Edit", font=("Arial", 12))
+search_box = Entry(search_boxf, width=39, font=("Arial", 12), bg=search_boxf['bg'], bd=0)
+search_box.insert(0, "Please input what you what to search, delete or edit")
+search_box.bind('<FocusIn>', on_search_box_click)
+search_boxf.grid(row=1, column=0)
+search_box.grid(row=1, column=1, padx=10, pady=10)
+
+
+
+s = Button(search_boxf, text="Search", bd=0, font=("Arial", 12),width=7, command=lambda:search_data())
+s.grid(row=1, column=2)
+d = Button(search_boxf, text="Delete", bd=0, font=("Arial", 12),width=7, command=lambda:delete_data())
+d.grid(row=1, column=3)
+e = Button(search_boxf, text="Edit", bd=0, font=("Arial", 12), width=5, command=lambda:edit_data())
+e.grid(row=1, column=4)
+search_boxf_canva = my_canva.create_window(420, 250, anchor="nw", window=search_boxf)
+
+t = LabelFrame(centerframe, text="VIEW", font=("Arial", 15))
+global tv1
+tv1 = ttk.Treeview(t, show='headings')
+treescrolly = Scrollbar(t, orient="vertical", command=tv1.yview)
+treescrollx = Scrollbar(t, orient="horizontal", command=tv1.xview)
+tv1.configure(xscrollcommand = treescrollx.set, yscrollcommand=treescrolly.set)
+treescrollx.pack(side ="bottom",fill ="x")
+treescrolly.pack(side ="right",fill="y")  
+
+tv1['columns'] = ("Student No.", "Fullname", "Email", "Gender", "Course", "Contact No.", "Address")
+tv1.column("#0", width=120, minwidth=25)
+tv1.column("Student No.", anchor=W, width=120)
+tv1.column("Fullname",  anchor=W, width=120)
+tv1.column("Email", anchor=W, width=120)
+tv1.column("Gender", anchor=W, width=120)
+tv1.column("Course", anchor=W, width=120)
+tv1.column("Contact No.", anchor=W, width=120)
+tv1.column("Address", anchor=W, width=120)
+
+tv1.heading("#0", text="Label", anchor=W)
+tv1.heading("Student No.", text="Student No.", anchor=W)
+tv1.heading("Fullname", text="Fullname", anchor=W)
+tv1.heading("Email", text="Email", anchor=W)
+tv1.heading("Gender", text="Gender", anchor=W)
+tv1.heading("Course", text="Course", anchor=W)
+tv1.heading("Contact No.", text="Contact No.", anchor=W)
+tv1.heading("Address", text="Address", anchor=W)
+
+for each_cell in range(2, (excel_data.max_row)+1):
+    tv1.insert(parent='', index="end", text=str(each_cell),values=(excel_data['A'+str(each_cell)].value,excel_data['B'+str(each_cell)].value, excel_data['C'+str(each_cell)].value, excel_data['D'+str(each_cell)].value, excel_data['E'+str(each_cell)].value, excel_data['F'+str(each_cell)].value, excel_data['G'+str(each_cell)].value, excel_data['H'+str(each_cell)].value))
+tv1.pack()
+t.place(x=420, y=315, width=565, height=245)
 
 # bottomframe
-pa = "gg.jpg"
-pho = ImageTk.PhotoImage(file = pa)
-my_can = Canvas(bottomframe, height=150, width=1030)
+pa = "gr.jpg"
+c = Image.open(pa)
+resize_c = c.resize((1030, 100))
+c = ImageTk.PhotoImage(resize_b)
+my_can = Canvas(bottomframe, height=100, width=1030)
 my_can.grid(row=0, column=0)
-my_can.create_image(0,0,image=pho, anchor="nw")
-
-# r_button = Button(newroot, text="Register", width=20, bg="lightblue", command=lambda:oldlyreg())
-# button = my_canva.create_window(170, 230, anchor="nw", window=r_button)
-
-add_btn = Button(bottomframe, text="Add Record", font=("System", 20))
-add_btn_w = my_can.create_window(5, 5, anchor="nw", window=add_btn)
-# add_btn.grid(row=0, column=0)
-
-save_btn = Button(bottomframe, text="Save", font=("System", 20))
-save_btn_w = my_can.create_window(5, 70, anchor="nw", window=save_btn)
-# save_btn = Button(bottomframe, text="Save", command=save_records, width=15, pady=5, font=("", 20), bg="#CCBBFF")
-# save_btn.grid(row=0, column=1)
-
-search_btn = Button(bottomframe, text="Search", font=("System", 20))
-search_btn_w = my_can.create_window(200, 5, anchor="nw", window=search_btn)
-# search_btn = Button(bottomframe, text="Search", command=search_data, width=15, pady=5, font=("", 20), bg="#CCBBFF")
-# search_btn.grid(row=1, column=0)
-
-view_btn = Button(bottomframe, text="View Data", font=("System", 20))
-view_btn_w = my_can.create_window(200, 70, anchor="nw", window=view_btn)
-# view_btn=Button(bottomframe,text="View Data", command=view_data ,width=15, pady=5, font=("", 20), bg="#CCBBFF")
-# view_btn.grid(row=1, column=1)
+my_can.create_image(0,0,image=c, anchor="nw")
 
 
-print_btn = Button(bottomframe, text="Print", font=("System", 20))
-print_btn_w = my_can.create_window(500, 40, anchor="nw", window=print_btn)
-# print_btn = Button(bottomframe, text="Print", command=print_records, width=15, pady=5, font=("", 20), bg="#CCBBFF")
-# print_btn.grid(row=0, column=2, rowspan=2)
+#BUTTONS
+add_btn = Button(bottomframe, text="Add Record", font=("System", 25), width=13, command=lambda:add_record())
+add_btn_w = my_can.create_window(10, 25, anchor="nw", window=add_btn)
 
-reset_btn = Button(bottomframe, text="Reset", font=("System", 20))
-reset_btn_w = my_can.create_window(700, 5, anchor="nw", window=reset_btn)
-# reset_btn = Button(bottomframe, text="Reset", command=reset_fields, width=15, pady=5, font=("", 20), bg="#CCBBFF")
-# reset_btn.grid(row=0, column=3)   
+print_btn = Button(bottomframe, text="Print", font=("System", 25), width=13, command=lambda:print_records())
+print_btn_w = my_can.create_window(270, 25, anchor="nw", window=print_btn)
 
-exit_btn = Button(bottomframe, text="Exit", font=("System", 20))
-exit_btn_w = my_can.create_window(700, 70, anchor="nw", window=exit_btn)
-# exit_btn = Button(bottomframe, text="Exit", command=exit_interface, width=15, pady=5, font=("", 20), bg="#CCBBFF")
-# exit_btn.grid(row=0, column=4)
+reset_btn = Button(bottomframe, text="Reset", font=("System", 25), width=13, command=lambda:reset_fields())
+reset_btn_w = my_can.create_window(530, 25, anchor="nw", window=reset_btn)   
 
+exit_btn = Button(bottomframe, text="Exit", font=("System", 25), width=13, command=lambda:exit_interface())
+exit_btn_w = my_can.create_window(790, 25, anchor="nw", window=exit_btn)
 
-
-edit_btn = Button(bottomframe, text="Edit", font=("System", 20))
-edit_btn_w = my_can.create_window(950, 5, anchor="nw", window=edit_btn)
-# edit_btn = Button(bottomframe, text="Edit", command=edit_data ,width=15, pady=5, font=("", 20), bg="#CCBBFF")
-# edit_btn.grid(row=1, column=4)
-
-del_btn = Button(bottomframe, text="Delete", font=("System", 20))
-del_btn_w = my_can.create_window(910, 70, anchor="nw", window=del_btn)
-# del_btn=Button(bottomframe,text="Delete", command=delete_data ,width=15, pady=5, font=("", 20), bg="#CCBBFF")
-# del_btn.grid(row=1, column=3)
 
 NewRoot.mainloop()
