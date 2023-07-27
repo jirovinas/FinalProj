@@ -56,12 +56,8 @@ def oldReg():
 		s = studentno.get()
 		ys = year_section.get()
 		ps = password.get()
-		if s == "":
-			messagebox.showerror("Error", "Please Enter Your Student No.")
-		elif ys == "":
-			messagebox.showerror("Error", "Please Enter Your Year and Section ")
-		elif ps == "":
-			messagebox.showerror("Error", "Please Enter Your Password")
+		if s == "" or ys == "" or  ps == "":
+			messagebox.showerror("Error", "Please Complete Your Details")
 		else:
 			excel_old.append((studentno.get(), password.get(), year_section.get()))
 			messagebox.showinfo("Register Message", "Register Successful")
@@ -110,12 +106,8 @@ def newReg():
 		f = fulln.get()
 		p = passw.get()
 		y = year_sec.get()
-		if f == "":
-			messagebox.showerror("Error", "Please Enter Your Fullname")
-		elif p == "":
-			messagebox.showerror("Error", "Please Enter Your Fullname")
-		elif y == "":
-			messagebox.showerror("Error", "Please Enter Your Year and Section")
+		if f == "" or  p == "" or  y == "":
+			messagebox.showerror("Error", "Please Complete Your Details")
 		else:
 			excel_new.append((fulln.get(), passw.get(), year_sec.get()))
 			messagebox.showinfo("Register Message", "Register Successful")
@@ -140,7 +132,7 @@ def newLog():
 	groot = Toplevel()
 	groot.geometry("700x350")
 	groot.title("Login Interface For New Students") 
-	#groot.resizable(False, False)
+	groot.resizable(False, False)
 
 	path = "login.jpg"
 	bg = Image.open(path)
@@ -188,7 +180,7 @@ def oldLog():
 	vroot = Toplevel()
 	vroot.geometry("700x350")
 	vroot.title("Login Interface For Old Students") 
-	#vroot.resizable(False, False)
+	vroot.resizable(False, False)
 
 	path = "login.jpg"
 	bg = Image.open(path)
@@ -330,14 +322,14 @@ a = [
 	"Bachelor of Science in English Language Studies",
 	"Bachelor of Science in Entrepreneurship",
 	"Bachelor of Science in Social Work",
-	"Bachelor in Technical Vocational Teacher’s Education",
+	"Bachelor in Technical Vocational Teachers Education",
 	"Diploma in Hotel and Restaurant Services",
 	"At present the former annex building of Lucena City Hall is being renovated to accommodate the growing student population of DLL."
 ]
 
 abt = Frame(rigthframe, width=600, height=750)
-a_l = Label(abt,text=_a,font=("System" ,25),fg="black",justify="center")
-a_l1 = Label(abt,font=("System" ,16),fg="black",justify="left")
+a_l = Label(abt,text=_a,font=("Arial" ,25),fg="black",justify="center")
+a_l1 = Label(abt,font=("Arial" ,11),fg="black",justify="left")
 
 a_l.pack()
 a_l1.pack(pady=20)

@@ -392,7 +392,7 @@ def newinterface():
 
 
     search_boxf = LabelFrame(centerframe, text="Search, Delete, Edit", font=("Arial", 12))
-    search_box = Entry(search_boxf, width=39, font=("Arial", 12), bg=search_boxf['bg'], bd=0)
+    search_box = Entry(search_boxf, width=39, font=("Arial", 12))
     search_box.insert(0, "Enter the Student No.")
     search_box.bind('<FocusIn>', on_search_box_click)
     search_boxf.grid(row=1, column=0)
@@ -417,13 +417,13 @@ def newinterface():
     treescrolly.pack(side ="right",fill="y")  
 
     tv1['columns'] = ("Student No.", "Fullname", "Email", "Gender", "Course", "Contact No.", "Address")
-    tv1.column("#0", width=120, minwidth=25)
-    tv1.column("Student No.", anchor=W, width=120)
+    tv1.column("#0", width=80, minwidth=25)
+    tv1.column("Student No.", anchor=W, width=80)
     tv1.column("Fullname",  anchor=W, width=120)
     tv1.column("Email", anchor=W, width=120)
-    tv1.column("Gender", anchor=W, width=120)
-    tv1.column("Course", anchor=W, width=120)
-    tv1.column("Contact No.", anchor=W, width=120)
+    tv1.column("Gender", anchor=W, width=50)
+    tv1.column("Course", anchor=W, width=50)
+    tv1.column("Contact No.", anchor=W, width=80)
     tv1.column("Address", anchor=W, width=120)
 
     tv1.heading("#0", text="Label", anchor=W)
@@ -437,14 +437,14 @@ def newinterface():
 
     for each_cell in range(2, (excel_data.max_row)+1):
         tv1.insert(parent='', index="end", text=str(each_cell),values=(excel_data['A'+str(each_cell)].value,excel_data['B'+str(each_cell)].value, excel_data['C'+str(each_cell)].value, excel_data['D'+str(each_cell)].value, excel_data['E'+str(each_cell)].value, excel_data['F'+str(each_cell)].value, excel_data['G'+str(each_cell)].value, excel_data['H'+str(each_cell)].value))
-    tv1.pack()
-    t.place(x=420, y=315, width=565, height=245)
+    tv1.pack(fill="both", expand=True)
+    t.place(x=420, y=315, width=570, height=245)
 
     # bottomframe
     pa = "gr.jpg"
     c = Image.open(pa)
     resize_c = c.resize((1030, 100))
-    c = ImageTk.PhotoImage(resize_b)
+    c = ImageTk.PhotoImage(resize_c)
     my_can = Canvas(bottomframe, height=100, width=1030)
     my_can.grid(row=0, column=0)
     my_can.create_image(0,0,image=c, anchor="nw")
